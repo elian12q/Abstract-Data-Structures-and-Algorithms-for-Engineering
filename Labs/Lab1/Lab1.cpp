@@ -16,6 +16,8 @@ void menu();
 void ejercicio1();
 double get_coefficients(char coefficient);
 int get_roots(double a, double b, double c, double* r1, double* r2);
+void ejercicio2();
+void moverJugador(int* posx, int* posy, char d);
 
 // Main
 int main () {
@@ -96,6 +98,88 @@ double get_coefficients(char coefficient){
     }
 }
 
+void ejercicio2(){
+    // Variables for position with their pointers 
+    int posX = 1; 
+    int posY = 1;
+    int* pointer3 = &posX;
+    int* pointer4 = &posY;
+
+    char next_pos; // It will be send to "moverJugador" function 
+    string input_pos; // To receive strings or chars
+
+    // While true keeps the game until player types "salir"
+    while (true){
+        cout << "\nEstás en la habitación [" << posX << "," << posY << "].\n";
+        cin >> input_pos;   
+
+        if ((input_pos == "norte") || (input_pos == "n")){ // "n" or "norte" are valid
+            next_pos = 'n';
+            moverJugador(pointer3, pointer4, next_pos);
+
+        } else if ((input_pos == "este") || (input_pos == "e")){ // "e" or "este" are valid
+            next_pos = 'e';
+            moverJugador(pointer3, pointer4, next_pos);
+
+        } else if ((input_pos == "oeste") || (input_pos == "o")){ // "o" or "oeste" are valid
+            next_pos = 'o';
+            moverJugador(pointer3, pointer4, next_pos);
+
+        } else if ((input_pos == "sur") || (input_pos == "s")){ // "s" or "sur" are valid
+            next_pos = 's';
+            moverJugador(pointer3, pointer4, next_pos);
+
+        } else if (input_pos == "salir"){ // To kill the game 
+            cout << "\nGracias por jugar.\n";
+            return;
+
+        } else { // For invalid inputs
+            cout << "Opción inválida.\n";
+        }
+    } 
+}
+
+void moverJugador(int* posx, int* posy, char d){
+    switch (d) // For each letter: n, e, o, s
+    {
+    case 'n':
+        if (*posx == 0) { // The limit for north 
+            cout << "No puedes ir en esa dirección, hay una pared.\n";
+        } else {
+            cout << "Te mueves al norte.\n";
+            *posx -=1; // Change the value in memory
+        }
+        break;
+
+    case 'e':
+        if (*posy == 2) { // The limit for east
+            cout << "No puedes ir en esa dirección, hay una pared.\n";
+        } else {
+            cout << "Te mueves al este.\n";
+            *posy +=1; // Change the value in memory
+        }
+        break;
+
+    case 'o':
+        if (*posy == 0) { // The limit for west
+            cout << "No puedes ir en esa dirección, hay una pared.\n";
+        } else {
+            cout << "Te mueves al oeste.\n";
+            *posy -=1; // Change the value in memory
+        }
+        break;
+
+    case 's':
+        if (*posx == 2) { // The limit for south
+            cout << "No puedes ir en esa dirección, hay una pared.\n";
+        } else {
+            cout << "Te mueves al sur.\n";
+            *posx +=1; // Change the value in memory
+        }
+        break;
+    } // There isn't default because d can only be n, e, o, s
+}
+
 void menu() {
 
     int menu_option;
@@ -126,8 +210,8 @@ void menu() {
                 ejercicio1();
                 break;
             case 2: 
-                cout << "Bienvenido al ejercicio 2\n"; 
-                return;
+                ejercicio2();
+                break;
             case 3:
                 cout << "Bienvenido al ejercicio 3\n"; 
                 return;
