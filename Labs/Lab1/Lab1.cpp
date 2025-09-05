@@ -8,6 +8,8 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <string>
+#include <cctype>  // For isdigit
 
 using namespace std;
 
@@ -18,6 +20,13 @@ double get_coefficients(char coefficient);
 int get_roots(double a, double b, double c, double* r1, double* r2);
 void ejercicio2();
 void moverJugador(int* posx, int* posy, char d);
+void ejercicio3();
+void calc_average(double* array, int size);
+void find_max_min(double* array, int size);
+void threshold(double* array, int size);
+void print_celsius(double* array, int size);
+void print_fahrenheit(double* array, int size);
+void ejercicio4();
 
 // Main
 int main () {
@@ -79,23 +88,56 @@ int get_roots(double a, double b, double c, double* r1, double* r2){
 
 double get_coefficients(char coefficient){
 
-    double z; // Random letter to print a, b or c
+    double z; // Random letter to save a, b or c
+    string input_coefficient; // Here we have the input as a string
 
     // While true to ask repeatedly
     while (true) {
         cout << "\nIngrese el coeficiente " << coefficient << ": ";
-        cin >> z;
+        cin >> input_coefficient;
 
-        // Check if the input is a number:
-        if (std::cin.fail()) {
-            std::cout << "\nOpción inválida, debe ser un número real.\n"
-                         "Inténtelo nuevamente.\n";
-            std::cin.clear();                                    // Clear the buffer error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore the rest of the line to avoid an infinite loop of errors
+        bool is_number = true; // To analyze all cases where de input is invalid
+        bool point = false; // Point is admitted once 
+
+        for (size_t i = 0; i < input_coefficient.size(); i++) { // Check the entire input
+
+            char s = input_coefficient[i]; // Iterates throughout the string
+
+            if (!isdigit(s)){ // If it is not a number:
+
+                if (input_coefficient.size() == 1){ // And there is only one character, is_number = false
+                    is_number = false;
+                    break;        
+                }
+
+                if (i == 0 && (s == '+' || s == '-')){ // But the first character is minus or plus, continue with the next iteration
+                    continue;
+                }
+                
+                if (s == '.' && (point)) { // And it is the second point in the string, is_number = false
+                    is_number = false; 
+                    break; 
+                } else if (s == '.' && (!point)){ // And it is the first point in the string, continue with the next iteration
+                    point = true;
+                    continue;
+                }
+            
+                is_number = false; // If none of the above conditions are met, is_number = false
+                break;
+            }
+        }
+
+        if (!is_number) {
+            cout << "\nOpción inválida, debe ser un número real.\n"
+                 << "Inténtelo nuevamente.\n";
             continue;
         }
-        return z;
+
+        // Convert to float
+        z = stod(input_coefficient);
+        break;
     }
+    return z;
 }
 
 void ejercicio2(){
@@ -140,88 +182,301 @@ void ejercicio2(){
 }
 
 void moverJugador(int* posx, int* posy, char d){
-    switch (d) // For each letter: n, e, o, s
-    {
-    case 'n':
-        if (*posx == 0) { // The limit for north 
-            cout << "No puedes ir en esa dirección, hay una pared.\n";
-        } else {
-            cout << "Te mueves al norte.\n";
-            *posx -=1; // Change the value in memory
-        }
-        break;
+    switch (d){ // For each letter: n, e, o, s
 
-    case 'e':
-        if (*posy == 2) { // The limit for east
-            cout << "No puedes ir en esa dirección, hay una pared.\n";
-        } else {
-            cout << "Te mueves al este.\n";
-            *posy +=1; // Change the value in memory
-        }
-        break;
+        case 'n':
+            if (*posx == 0) { // The limit for north 
+                cout << "No puedes ir en esa dirección, hay una pared.\n";
+            } else {
+                cout << "Te mueves al norte.\n";
+                *posx -=1; // Change the value in memory
+            }
+            break;
 
-    case 'o':
-        if (*posy == 0) { // The limit for west
-            cout << "No puedes ir en esa dirección, hay una pared.\n";
-        } else {
-            cout << "Te mueves al oeste.\n";
-            *posy -=1; // Change the value in memory
-        }
-        break;
+        case 'e':
+            if (*posy == 2) { // The limit for east
+                cout << "No puedes ir en esa dirección, hay una pared.\n";
+            } else {
+                cout << "Te mueves al este.\n";
+                *posy +=1; // Change the value in memory
+            }
+            break;
 
-    case 's':
-        if (*posx == 2) { // The limit for south
-            cout << "No puedes ir en esa dirección, hay una pared.\n";
-        } else {
-            cout << "Te mueves al sur.\n";
-            *posx +=1; // Change the value in memory
-        }
-        break;
+        case 'o':
+            if (*posy == 0) { // The limit for west
+                cout << "No puedes ir en esa dirección, hay una pared.\n";
+            } else {
+                cout << "Te mueves al oeste.\n";
+                *posy -=1; // Change the value in memory
+            }
+            break;
+
+        case 's':
+            if (*posx == 2) { // The limit for south
+                cout << "No puedes ir en esa dirección, hay una pared.\n";
+            } else {
+                cout << "Te mueves al sur.\n";
+                *posx +=1; // Change the value in memory
+            }
+            break;
     } // There isn't default because d can only be n, e, o, s
+}
+
+void ejercicio3(){
+
+    string temp_input; // Here we have the input as a string
+    int menu_temp;
+
+    // Array, its pointer and the number of temperature values
+    double temperaturas[] = {22.5, 24.1, 21.9, 25.3, 26.0, 19.8, 23.7, 28.1, 18.5, 22.5};
+    double* pointer5 = temperaturas; // equivalent: double* pointer5 = &temperaturas[0] 
+    size_t size_temp = sizeof(temperaturas) / sizeof(temperaturas[0]);
+
+    // While true to ask repeatedly
+    while (true) {
+        cout << "\n--- Analizador de Temperaturas---\n"
+            "1. Calcular Promedio\n"
+            "2. Encontrar Máximo y Mínimo\n"
+            "3. Contar Superiores a Umbral\n"
+            "4. Mostrar datos en Celsius\n"
+            "5. Mostrar datos en Fahrenheit\n"
+            "6. Salir\n"
+            "Seleccione una opción: ";
+
+        cin >> temp_input;
+
+        // Check if the input is a valid number:
+        bool is_interger = true;
+        for (char c : temp_input) { // Check the entire input
+            if (!isdigit(c)) {      // If it is not a single interger digit, it will show an error
+                is_interger = false;
+                break;
+            }
+        }
+
+        if (!is_interger) {
+            cout << "\nOpción inválida, debe ser un valor entre 1 y 6.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        }
+
+        // Convert to integer
+        menu_temp = stoi(temp_input);
+
+        // Check the entered value
+        switch (menu_temp) {
+            case 1: 
+                calc_average(pointer5, size_temp);
+                break;
+            case 2: 
+                find_max_min(pointer5, size_temp);
+                break;
+            case 3:
+                threshold(pointer5 ,size_temp);
+                break;
+            case 4:
+                print_celsius(pointer5, size_temp);
+                break;
+            case 5:
+                print_fahrenheit(pointer5, size_temp);
+                break;
+            case 6:
+                cout << "\nSaliendo del programa.\n";
+                return;
+            default:
+                cout << "\nOpción inválida, debe ser un valor entre 1 y 6.\n"
+                        "Inténtelo nuevamente.\n";
+        }
+    }
+}
+
+void calc_average(double* array, int size){
+
+    // Variable to do the sum
+    double average = 0;
+
+    // This loop iterates through the array
+    for (int i = 0; i < size; i++){
+
+        average += *(array + i); // It takes the values in the memory where the array is
+    }
+
+    // Divide by the size of the array
+    average = average / size;
+    cout << "La temperatura promedio es: " << average << " C\n";
+}
+
+void find_max_min(double* array, int size){
+    float max = *array;
+    float min = *array;
+
+    // This loop iterates through the array
+    for (int i = 0; i < size; i++){
+
+        if (max < *(array + i)){ // If the current max value is less than the next value in the array, update the max value
+            max = *(array + i);
+        }
+
+        else if (min > *(array + i)){ // If the current min value is greater than the next value in the array, update the min value
+            min = *(array + i);
+        }
+    }
+    cout << "La temperatura máxima es: " << max << " C\n"
+         << "La temperatura mínima es: " << min << " C\n"; 
+}
+
+void threshold(double* array, int size){
+
+    double threshold_value;
+    int count = 0;
+    string threshold_input; // Here we have the input as a string
+
+    while (true){
+        cout << "\nIngrese el valor de umbral (en Celsius): ";
+        cin >> threshold_input;
+
+        bool is_number = true; // To analyze all cases where de input is invalid
+        bool point = false; // Point is admitted once 
+
+        for (size_t i = 0; i < threshold_input.size(); i++) { // Check the entire input
+
+            char s = threshold_input[i]; // Iterates throughout the string
+
+            if (!isdigit(s)){ // If it is not a number:
+
+                if (threshold_input.size() == 1){ // And there is only one character, is_number = false
+                    is_number = false;
+                    break;        
+                }
+
+                if (i == 0 && (s == '+' || s == '-')){ // But the first character is minus or plus, continue with the next iteration
+                    continue;
+                }
+                
+                if (s == '.' && (point)) { // And it is the second point in the string, is_number = false
+                    is_number = false; 
+                    break; 
+                } else if (s == '.' && (!point)){ // And it is the first point in the string, continue with the next iteration
+                    point = true;
+                    continue;
+                }
+            
+                is_number = false; // If none of the above conditions are met, is_number = false
+                break;
+            }
+        }
+
+        if (!is_number) {
+            cout << "\nOpción inválida, debe ser un número real.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        }
+
+        // Convert to float
+        threshold_value = stod(threshold_input);
+        break;
+    }
+
+    // This loop iterates through the array
+    for (int i = 0; i < size; i++){
+
+        if (threshold_value < *(array + i)){ // If threshold value is less than the value in array, count = count + 1 
+            count += 1;
+        }
+    }
+    cout << "\nHay " << count << " lecturas de temperatura que superan el umbral de " << threshold_value << " C\n";
+}
+
+void print_celsius(double* array, int size){
+
+    cout << "--- Temperaturas en Celsius ---\n";
+
+    // This loop iterates through the array
+    for (int i = 0; i < size; i++){
+
+        if (i == (size - 1)){ // If is the last position, don't set a comma
+            cout << *(array + i) << " C\n";
+
+        } else {
+            cout << *(array + i) << " C, ";
+        }
+    }
+    cout << "-------------------------------\n";
+
+}
+
+void print_fahrenheit(double* array, int size){
+
+    cout << "--- Temperaturas en Fahrenheit ---\n";
+
+    // This loop iterates through the array
+    for (int i = 0; i < size; i++){
+
+        if (i == (size - 1)){ // If is the last position, don't set a comma
+            cout << ((*(array + i) * (9.0/5) ) + 32) << " F\n"; // Applying the formula: F = (C * (9/5)) + 32
+
+        } else {
+            cout << ((*(array + i) * (9.0/5) ) + 32) << " F, ";
+        }
+    }
+    cout << "---------------------------------\n";
 }
 
 void menu() {
 
+    string main_input; // Here we have the input as a string
     int menu_option;
 
     // While true to ask repeatedly
     while (true) {
-        cout << "\n--------------------------Menú Laboratorio 1-------------------------- \n"
-            "1. Ejercicio 1 \n"
-            "2. Ejercicio 2 \n"
-            "3. Ejercicio 3 \n"
-            "4. Salir \n"
-            "Ingrese la opción que desea ejecutar: ";
+        cout << "\n--------------------------Menú Laboratorio 1--------------------------\n"
+             << "1. Ejercicio 1 \n"
+             << "2. Ejercicio 2 \n"
+             << "3. Ejercicio 3 \n"
+             << "4. Ejercicio 4 \n"
+             << "5. Salir \n"
+             << "Ingrese la opción que desea ejecutar: ";
 
-        cin  >> menu_option;
+        cin >> main_input;
 
-        // Check if the input is a number:
-        if (std::cin.fail()) {
-            std::cout << "\nOpción inválida, debe ser un valor entre 1 y 4.\n"
-                         "Inténtelo nuevamente.\n";
-            std::cin.clear();                                    // Clear the buffer error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore the rest of the line to avoid an infinite loop of errors
-            continue;                                            // Jump to the next iteration
+        // Check if the input is a valid number:
+        bool is_interger = true;
+        for (char c : main_input) { // Check the entire input
+            if (!isdigit(c)) {      // If it is not a single interger digit, it will show an error
+                is_interger = false;
+                break;
+            }
         }
+
+        if (!is_interger) {
+            cout << "\nOpción inválida, debe ser un valor entre 1 y 5.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        }
+
+        // Convert to integer
+        menu_option = stoi(main_input);
 
         // Check the entered value
         switch (menu_option) {
-            case 1: 
+            case 1:
                 ejercicio1();
                 break;
-            case 2: 
+            case 2:
                 ejercicio2();
                 break;
             case 3:
-                cout << "Bienvenido al ejercicio 3\n"; 
-                return;
+                ejercicio3();
+                break;
             case 4:
-                cout << "\nSaliendo del programa... \n";
+                cout << "Bienvenido al ejercicio 4\n"; 
+                continue;
+            case 5:
+                cout << "\nSaliendo del programa...\n";
                 return;
             default:
-                cout << "\nOpción inválida, debe ser un valor entre 1 y 4.\n"
-                        "Inténtelo nuevamente.\n";
+                cout << "\nOpción inválida, debe ser un valor entre 1 y 5.\n"
+                     << "Inténtelo nuevamente.\n";
         }
     }
-    
 }
