@@ -10,11 +10,11 @@
 #include <cmath>
 #include <string>
 #include <cctype>  // For isdigit
+#include <vector>
 
 using namespace std;
 
 // Function prototypes
-void menu();
 void ejercicio1();
 double get_coefficients(char coefficient);
 int get_roots(double a, double b, double c, double* r1, double* r2);
@@ -27,6 +27,11 @@ void threshold(double* array, int size);
 void print_celsius(double* array, int size);
 void print_fahrenheit(double* array, int size);
 void ejercicio4();
+void add_task(vector<string>* v);
+void see_task(vector<string>* v);
+void done_task(vector<string>* v);
+void menu();
+bool check_integer(string input);
 
 // Main
 int main () {
@@ -232,36 +237,29 @@ void ejercicio3(){
     double* pointer5 = temperaturas; // equivalent: double* pointer5 = &temperaturas[0] 
     size_t size_temp = sizeof(temperaturas) / sizeof(temperaturas[0]);
 
-    // While true to ask repeatedly
-    while (true) {
-        cout << "\n--- Analizador de Temperaturas---\n"
+    cout << "\n--- Analizador de Temperaturas ---\n"
             "1. Calcular Promedio\n"
             "2. Encontrar Máximo y Mínimo\n"
             "3. Contar Superiores a Umbral\n"
             "4. Mostrar datos en Celsius\n"
             "5. Mostrar datos en Fahrenheit\n"
-            "6. Salir\n"
-            "Seleccione una opción: ";
+            "6. Salir";
+
+    // While true to ask repeatedly
+    while (true) {
+        cout << "\nSeleccione una opción: ";
 
         cin >> temp_input;
 
-        // Check if the input is a valid number:
-        bool is_interger = true;
-        for (char c : temp_input) { // Check the entire input
-            if (!isdigit(c)) {      // If it is not a single interger digit, it will show an error
-                is_interger = false;
-                break;
-            }
-        }
+        if (check_integer(temp_input)) {   // If true, read the number as integer
+            // Convert to integer
+            menu_temp = stoi(temp_input);
 
-        if (!is_interger) {
+        } else {                            // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entre 1 y 6.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
         }
-
-        // Convert to integer
-        menu_temp = stoi(temp_input);
 
         // Check the entered value
         switch (menu_temp) {
@@ -402,7 +400,6 @@ void print_celsius(double* array, int size){
         }
     }
     cout << "-------------------------------\n";
-
 }
 
 void print_fahrenheit(double* array, int size){
@@ -422,11 +419,124 @@ void print_fahrenheit(double* array, int size){
     cout << "---------------------------------\n";
 }
 
+void ejercicio4(){
+
+    string to_do_input; // Here we have the input as a string
+    int menu_to_do;
+    vector<string> tasks;
+
+    cout << "\n--- Mi Lista de Tareas ---\n"
+            "1. Agregar Tarea\n"
+            "2. Ver Tareas\n"
+            "3. Marcar Tarea como Completada\n"
+            "4. Salir";
+
+    // While true to ask repeatedly
+    while (true) {
+            cout << "\nOpción: ";
+
+        cin >> to_do_input;
+
+        if (check_integer(to_do_input)) {   // If true, read the number as integer
+            // Convert to integer
+            menu_to_do = stoi(to_do_input);
+
+        } else {                            // If false, keep asking                      
+            cout << "\nOpción inválida, debe ser un valor entre 1 y 4.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        }
+
+        // Check the entered value
+        switch (menu_to_do) {
+            case 1: 
+                add_task(&tasks);
+                break;
+            case 2:
+                if ( (tasks.size()) == 0 ) { // If the vector is empty, there is nothing to show
+                    cout << "\nLa lista de tareas está vacía.\n";
+                    break;
+                }
+                see_task(&tasks);
+                break;
+            case 3:
+                if ( (tasks.size()) == 0 ) { // If the vector is empty, there is nothing to complete
+                    cout << "\nLa lista de tareas está vacía.\n";
+                    break;
+                }
+                done_task(&tasks);
+                break;
+            case 4:
+                cout << "\nHasta luego!\n";
+                return;
+            default:
+                cout << "\nOpción inválida, debe ser un valor entre 1 y 4.\n"
+                        "Inténtelo nuevamente.\n";
+        }
+    }
+}
+
+void add_task(vector<string>* v){
+
+    string new_task;
+    cout << "Ingrese la nueva tarea: ";
+
+    getline(cin >> ws, new_task); // Save the entire string to "new_task"
+    (*v).push_back(new_task); // Add new element to the vector
+}
+
+void see_task(vector<string>* v){
+
+    cout << "--- TAREAS PENDIENTES ---\n";
+
+    // This loop iterates through the vector and print its elements
+    for (size_t i = 0; i < (*v).size(); i++) {
+        cout << (i+1) << ". " << (*v)[i] << "\n";
+    }
+    cout << "-------------------------\n";
+}
+
+void done_task(vector<string>* v){
+
+    string task_num_input;
+    int task_num;
+
+    while (true) {
+        cout << "Número de la tarea a completar: ";
+        cin >> task_num_input;
+
+        if (check_integer(task_num_input)) {   // If true, read the number as integer
+            // Convert to integer
+            task_num = stoi(task_num_input);
+            break;
+
+        } else {                                // If false, keep asking                      
+            cout << "\nOpción inválida, debe ser un valor entero positivo.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        }
+
+        if (task_num<=0){ // It has to be greater than 0
+            cout << "\nOpción inválida, debe ser un valor entero positivo.\n"
+                 << "Inténtelo nuevamente.\n";
+            continue;
+        } 
+    }
+
+    if ( (task_num) > static_cast<int>((*v).size()) ){ // Checks if the vector has the number of tasks equal to the value of "num_task"
+        cout << "\nLa lista no tiene una tarea número " << (task_num) << ".\n";
+        return;
+    }
+
+    cout << "Tarea \"" << (*v)[task_num - 1] << "\" completada.\n";
+    (*v).erase((*v).begin() + (task_num - 1)); // Erase from the vector, the value given for the user 
+}
+
 void menu() {
 
     string main_input; // Here we have the input as a string
     int menu_option;
-
+    
     // While true to ask repeatedly
     while (true) {
         cout << "\n--------------------------Menú Laboratorio 1--------------------------\n"
@@ -438,24 +548,16 @@ void menu() {
              << "Ingrese la opción que desea ejecutar: ";
 
         cin >> main_input;
+        
+        if (check_integer(main_input)) {   // If true, read the number as integer
+            // Convert to integer
+            menu_option = stoi(main_input);
 
-        // Check if the input is a valid number:
-        bool is_interger = true;
-        for (char c : main_input) { // Check the entire input
-            if (!isdigit(c)) {      // If it is not a single interger digit, it will show an error
-                is_interger = false;
-                break;
-            }
-        }
-
-        if (!is_interger) {
+        } else {                            // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entre 1 y 5.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
         }
-
-        // Convert to integer
-        menu_option = stoi(main_input);
 
         // Check the entered value
         switch (menu_option) {
@@ -469,8 +571,8 @@ void menu() {
                 ejercicio3();
                 break;
             case 4:
-                cout << "Bienvenido al ejercicio 4\n"; 
-                continue;
+                ejercicio4();
+                break;
             case 5:
                 cout << "\nSaliendo del programa...\n";
                 return;
@@ -479,4 +581,22 @@ void menu() {
                      << "Inténtelo nuevamente.\n";
         }
     }
+}
+
+bool check_integer(string input){
+
+        // Check if the input is a valid number:
+        bool is_integer = true;
+        for (char c : input) { // Check the entire input
+            if (!isdigit(c)) {      // If it is not a single integer digit, it will show an error
+                is_integer = false;
+                break;
+            }
+        }
+
+        if (!is_integer) { // If it is not integer return false
+            return false;
+        } else {
+            return true;    // If it is integer return true         
+        }
 }
