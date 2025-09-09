@@ -31,7 +31,7 @@ void add_task(vector<string>* v);
 void see_task(vector<string>* v);
 void done_task(vector<string>* v);
 void menu();
-bool check_integer(string input);
+bool check_natural_number(string input);
 
 // Main
 int main () {
@@ -93,16 +93,16 @@ int get_roots(double a, double b, double c, double* r1, double* r2){
 
 double get_coefficients(char coefficient){
 
-    double z; // Random letter to save a, b or c
-    string input_coefficient; // Here we have the input as a string
+    double z; // Variable to store a, b or c
+    string input_coefficient; // Input as string
 
     // While true to ask repeatedly
     while (true) {
         cout << "\nIngrese el coeficiente " << coefficient << ": ";
         cin >> input_coefficient;
 
-        bool is_number = true; // To analyze all cases where de input is invalid
-        bool point = false; // Point is admitted once 
+        bool is_number = true; // To analyze all cases where the input is invalid
+        bool point = false; // Decimal point allowed only once
 
         for (size_t i = 0; i < input_coefficient.size(); i++) { // Check the entire input
 
@@ -152,7 +152,7 @@ void ejercicio2(){
     int* pointer3 = &posX;
     int* pointer4 = &posY;
 
-    char next_pos; // It will be send to "moverJugador" function 
+    char next_pos; // It will be sent to the "moverJugador" function 
     string input_pos; // To receive strings or chars
 
     // While true keeps the game until player types "salir"
@@ -229,7 +229,7 @@ void moverJugador(int* posx, int* posy, char d){
 
 void ejercicio3(){
 
-    string temp_input; // Here we have the input as a string
+    string temp_input; // Input as string
     int menu_temp;
 
     // Array, its pointer and the number of temperature values
@@ -251,11 +251,11 @@ void ejercicio3(){
 
         cin >> temp_input;
 
-        if (check_integer(temp_input)) {   // If true, read the number as integer
+        if (check_natural_number(temp_input)) { // If true, read the number as an integer
             // Convert to integer
             menu_temp = stoi(temp_input);
 
-        } else {                            // If false, keep asking                      
+        } else { // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entre 1 y 6.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
@@ -327,14 +327,14 @@ void threshold(double* array, int size){
 
     double threshold_value;
     int count = 0;
-    string threshold_input; // Here we have the input as a string
+    string threshold_input; // Input as string
 
     while (true){
         cout << "\nIngrese el valor de umbral (en Celsius): ";
         cin >> threshold_input;
 
-        bool is_number = true; // To analyze all cases where de input is invalid
-        bool point = false; // Point is admitted once 
+        bool is_number = true; // To analyze all cases where the input is invalid
+        bool point = false; // Decimal point allowed only once
 
         for (size_t i = 0; i < threshold_input.size(); i++) { // Check the entire input
 
@@ -392,7 +392,7 @@ void print_celsius(double* array, int size){
     // This loop iterates through the array
     for (int i = 0; i < size; i++){
 
-        if (i == (size - 1)){ // If is the last position, don't set a comma
+        if (i == (size - 1)){ // If it is the last position, don't print a comma
             cout << *(array + i) << " C\n";
 
         } else {
@@ -421,7 +421,7 @@ void print_fahrenheit(double* array, int size){
 
 void ejercicio4(){
 
-    string to_do_input; // Here we have the input as a string
+    string to_do_input; // Input as a string
     int menu_to_do;
     vector<string> tasks;
 
@@ -437,11 +437,11 @@ void ejercicio4(){
 
         cin >> to_do_input;
 
-        if (check_integer(to_do_input)) {   // If true, read the number as integer
+        if (check_natural_number(to_do_input)) { // If true, read the number as an integer
             // Convert to integer
             menu_to_do = stoi(to_do_input);
 
-        } else {                            // If false, keep asking                      
+        } else { // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entre 1 y 4.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
@@ -489,7 +489,7 @@ void see_task(vector<string>* v){
 
     cout << "--- TAREAS PENDIENTES ---\n";
 
-    // This loop iterates through the vector and print its elements
+    // This loop iterates through the vector and prints its elements
     for (size_t i = 0; i < (*v).size(); i++) {
         cout << (i+1) << ". " << (*v)[i] << "\n";
     }
@@ -505,12 +505,12 @@ void done_task(vector<string>* v){
         cout << "Número de la tarea a completar: ";
         cin >> task_num_input;
 
-        if (check_integer(task_num_input)) {   // If true, read the number as integer
+        if (check_natural_number(task_num_input)) { // If true, read the number as an integer
             // Convert to integer
             task_num = stoi(task_num_input);
             break;
 
-        } else {                                // If false, keep asking                      
+        } else { // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entero positivo.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
@@ -534,7 +534,7 @@ void done_task(vector<string>* v){
 
 void menu() {
 
-    string main_input; // Here we have the input as a string
+    string main_input; // Input as a string
     int menu_option;
     
     // While true to ask repeatedly
@@ -549,11 +549,11 @@ void menu() {
 
         cin >> main_input;
         
-        if (check_integer(main_input)) {   // If true, read the number as integer
+        if (check_natural_number(main_input)) { // If true, read the number as an integer
             // Convert to integer
             menu_option = stoi(main_input);
 
-        } else {                            // If false, keep asking                      
+        } else { // If false, keep asking                      
             cout << "\nOpción inválida, debe ser un valor entre 1 y 5.\n"
                  << "Inténtelo nuevamente.\n";
             continue;
@@ -583,20 +583,20 @@ void menu() {
     }
 }
 
-bool check_integer(string input){
+bool check_natural_number(string input){
 
         // Check if the input is a valid number:
-        bool is_integer = true;
+        bool is_natural_number = true;
         for (char c : input) { // Check the entire input
-            if (!isdigit(c)) {      // If it is not a single integer digit, it will show an error
-                is_integer = false;
+            if (!isdigit(c)) { // If it is not a single digit, it will show an error
+                is_natural_number = false;
                 break;
             }
         }
 
-        if (!is_integer) { // If it is not integer return false
+        if (!is_natural_number) { // If it is not a natural number return false
             return false;
         } else {
-            return true;    // If it is integer return true         
+            return true; // If it is a natural number return true         
         }
 }
